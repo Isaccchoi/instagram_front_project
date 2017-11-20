@@ -4,23 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <title>Instagram</title>
+    <script src="js/jquery-3.2.1.min.js"></script>
 </head>
 <body>
-    <script>
+<div>
+    <button onclick="fblogin()" class="btn-facebook">페이스북 로그인</button>
+</div>
+<button onclick="getPost()">포스트 가져오자</button>
+
+<div id="post-container"></div>
+<script>
+    (function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "//connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
+    // Init SDK
+    window.fbAsyncInit = function () {
+        FB.init({
+            appId: '1840554599305176',
+            cookie: true,  // enable cookies to allow the server to access
+                           // the session
+            xfbml: true,  // parse social plugins on this page
+            version: 'v2.8' // use graph api version 2.8
+        });
+        /* Facebook Check */
+        FB.getLoginStatus(function (response) {
+            if (response.status === 'connected') {
+
+            } else {
+            }
+        });
+    };
+
+    /* Function */
+
+    function fblogin() {
+        FB.login(function (response) {
+            console.log(response);
+        });
+    }
+
+    // python -m http.server 3001
+    function getPost() {
         $.ajax({
             method: 'GET',
-            url: 'http://localhost:8000/api/post/',
+            url: 'http://localhost:8000/api/post/'
         })
-        .done(function(response) {
-            console.log('Done!');
-            console.log(response);
-        })
-        .fail(function(response) {
-            console.log('Fail!');
-            console.log(response);
-        })
-    </script>
+            .done(function (data) {
+                console.log('Done!');
+                console.log(data);
+                for (var i = 0; i < data.length; i++) {
+                    $('#post-container').prepend('<img src="' + data[i].photo + '" style="max-width: 100%;">')
+                }
+
+            })
+            .fail(function (data) {
+                console.log('Fail!');
+                console.log(data);
+            });
+    }
+</script>
 </body>
 </html>
